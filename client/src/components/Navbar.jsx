@@ -41,10 +41,10 @@ const Navbar = () => {
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-2 group">
           <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform">
-            P.
+            F.M
           </div>
           <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            Portfolio
+            Journey
           </span>
         </Link>
 

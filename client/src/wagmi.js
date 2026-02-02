@@ -9,6 +9,6 @@ const projectId = '3011a6d4f4210a66f48e9337cb45c950';
 export const config = getDefaultConfig({
   appName: 'My Prof Portfolio',
   projectId: projectId,
-  chains: [hardhat, sepolia, polygon],
+  chains: [sepolia, hardhat, polygon],
   ssr: false,
 });

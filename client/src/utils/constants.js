@@ -1,4 +1,4 @@
 // client/src/utils/constants.js
 
-export const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; 
+export const CONTRACT_ADDRESS = "0x29e5fF10D8A8F7bcc4Cd20281207111C5AFA3c14"; 
 // ^ PASTE YOUR COPIED ADDRESS ABOVE ^

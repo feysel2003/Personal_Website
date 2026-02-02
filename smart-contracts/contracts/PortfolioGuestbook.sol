@@ -8,7 +8,7 @@ contract PortfolioGuestbook {
         string name;
         string message;
         uint256 timestamp;
-        bool hasTipped;
+        bool hasTipped; // <--- New field
     }
 
     Entry[] public entries;
@@ -20,6 +20,7 @@ contract PortfolioGuestbook {
         owner = payable(msg.sender); 
     }
 
+    // Mark function as 'payable' to accept ETH
     function signGuestbook(string memory _name, string memory _message) public payable {
         bool isTip = msg.value > 0;
 
@@ -31,6 +32,7 @@ contract PortfolioGuestbook {
             isTip
         ));
 
+        // If they sent ETH, transfer it to YOU immediately
         if (isTip) {
             (bool success, ) = owner.call{value: msg.value}("");
             require(success, "Tip transfer failed.");
