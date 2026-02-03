@@ -48,18 +48,23 @@ const About = () => {
             </div>
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative"
-          >
-            <div className="absolute inset-0 bg-blue-600/10 rounded-2xl transform rotate-3"></div>
-            <img 
-              src="https://res.cloudinary.com/dosln7f10/image/upload/v1770140345/photo_2026-02-02_17-49-21_gf4zsw.jpg" 
-              alt="Engineering Student" 
-              className="relative  rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 transform -rotate-2 hover:rotate-0 transition duration-500"
-            />
-          </motion.div>
+        <motion.div 
+  initial={{ opacity: 0, scale: 0.9 }}
+  animate={{ opacity: 1, scale: 1 }}
+  // 1. Constrain width (max-w-md) and center it
+  className="relative w-full max-w-md mx-auto"
+>
+  {/* Background decoration matches the image size automatically */}
+  <div className="absolute inset-0 bg-blue-600/10 rounded-2xl transform rotate-3"></div>
+  
+  <img 
+    src="https://res.cloudinary.com/dosln7f10/image/upload/v1770140345/photo_2026-02-02_17-49-21_gf4zsw.jpg" 
+    alt="Engineering Student" 
+    // 2. FIX: 'h-auto' ensures the full image is shown (no cropping/zooming)
+    // 'w-full' ensures it fits the container width
+    className="relative w-full h-auto rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 transform -rotate-2 hover:rotate-0 transition duration-500"
+  />
+</motion.div>
         </div>
 
         {/* Timeline Header */}
