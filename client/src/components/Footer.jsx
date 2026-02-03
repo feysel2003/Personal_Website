@@ -34,7 +34,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <span className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-sm text-white">P.</span>
+              <span className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-sm text-white">F.M</span>
               Portfolio.
             </h2>
             <p className="text-sm leading-relaxed">
