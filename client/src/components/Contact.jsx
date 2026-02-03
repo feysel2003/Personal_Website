@@ -22,7 +22,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-24 px-6 max-w-7xl mx-auto relative">
+    <section id="contact" className="py-24 px-6 max-w-7xl mx-auto relative scroll-mt-36">
       
       {/* Section Header */}
       <div className="text-center mb-16">
@@ -52,14 +52,15 @@ const Contact = () => {
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/10 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-500">
                   <Mail size={20} />
                 </div>
-                <span>hello@yourportfolio.com</span>
+                <span>feyselmifta982@gmail.com</span>
               </div>
               
+              {/* IMPROVED LOCATION */}
               <div className="flex items-center gap-4 text-gray-600 dark:text-gray-300">
                 <div className="w-10 h-10 bg-purple-100 dark:bg-purple-500/10 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-500">
                   <MapPin size={20} />
                 </div>
-                <span>Remote / Worldwide</span>
+                <span>Addis Ababa, Ethiopia (Open to Remote)</span>
               </div>
             </div>
           </div>
@@ -68,19 +69,35 @@ const Contact = () => {
           <div className="bg-white dark:bg-slate-900/50 p-6 rounded-2xl border border-gray-200 dark:border-slate-800 backdrop-blur-sm shadow-sm dark:shadow-none">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Connect</h3>
             <div className="flex gap-4">
-              {[
-                { icon: <Github size={20} />, href: "#", color: "hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700" },
-                { icon: <Linkedin size={20} />, href: "#", color: "hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/10" },
-                { icon: <Twitter size={20} />, href: "#", color: "hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-500/10" }
-              ].map((social, i) => (
-                <a 
-                  key={i} 
-                  href={social.href}
-                  className={`w-12 h-12 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 transition-all ${social.color}`}
-                >
-                  {social.icon}
-                </a>
-              ))}
+              
+              {/* UPDATED LINKS */}
+              <a 
+                href="https://github.com/feysel2003" 
+                target="_blank"
+                rel="noreferrer"
+                className="w-12 h-12 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white transition-all"
+              >
+                <Github size={20} />
+              </a>
+
+              <a 
+                href="https://linkedin.com/in/your-linkedin-profile" // You didn't provide this, update if needed
+                target="_blank"
+                rel="noreferrer"
+                className="w-12 h-12 bg-blue-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-blue-500 dark:text-gray-400 hover:bg-blue-200 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+              >
+                <Linkedin size={20} />
+              </a>
+
+              <a 
+                href="https://x.com/mifta_feys66399" 
+                target="_blank"
+                rel="noreferrer"
+                className="w-12 h-12 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-black hover:text-white dark:hover:bg-black dark:hover:text-white transition-all"
+              >
+                <Twitter size={20} />
+              </a>
+
             </div>
           </div>
         </motion.div>

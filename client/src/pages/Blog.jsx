@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Clock, Calendar, Search, ArrowRight, Hash, Terminal } from 'lucide-react';
+import { Clock, Calendar, Search, ArrowRight, Hash, Terminal, Youtube } from 'lucide-react'; // Added Youtube icon
 import API from '../services/api';
 
 const Blog = () => {
@@ -23,14 +23,12 @@ const Blog = () => {
     fetchPosts();
   }, []);
 
-  // Filter Logic
   const filteredPosts = posts.filter(post => 
     post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
-    // FIX 1: Removed hardcoded bg-[#0f172a] and text-white
     <div className="min-h-screen pt-24 px-6 pb-20 relative overflow-hidden">
       
       {/* Background Decor */}
@@ -121,6 +119,13 @@ const Blog = () => {
                     <Calendar size={12} />
                     {new Date(post.createdAt).toLocaleDateString()}
                   </div>
+
+                  {/* Video Badge (NEW) */}
+                  {post.videoUrl && (
+                    <div className="absolute top-4 left-4 z-20 bg-red-600/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold text-white flex items-center gap-2 shadow-sm">
+                      <Youtube size={12} /> Video
+                    </div>
+                  )}
                 </div>
 
                 {/* Content Area */}

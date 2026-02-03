@@ -15,20 +15,24 @@ const Project = sequelize.define('Project', {
     type: DataTypes.TEXT,
     allowNull: false
   },
+  // UPDATE: Changed from ENUM to STRING to allow 'UNIVERSITY', 'SELF-TAUGHT', etc.
   category: {
-    type: DataTypes.ENUM('MERN', 'PERN', 'WEB3'),
+    type: DataTypes.STRING, 
     allowNull: false
   },
   techStack: {
-    type: DataTypes.ARRAY(DataTypes.STRING), // e.g. ["React", "Solidity"]
+    type: DataTypes.ARRAY(DataTypes.STRING), 
     defaultValue: []
   },
+  // UPDATE: Added allowNull: true so you can save projects without links
   githubUrl: {
     type: DataTypes.STRING,
+    allowNull: true, 
     validate: { isUrl: true }
   },
   liveUrl: {
     type: DataTypes.STRING,
+    allowNull: true,
     validate: { isUrl: true }
   },
   imageUrl: {
@@ -40,7 +44,7 @@ const Project = sequelize.define('Project', {
     defaultValue: false
   }
 }, {
-  timestamps: true // Adds createdAt and updatedAt automatically
+  timestamps: true 
 });
 
 module.exports = Project;

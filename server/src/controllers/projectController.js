@@ -67,8 +67,9 @@ exports.seedProjects = async (req, res) => {
 // ... existing code ...
 
 const Message = require('../models/nosql/Message');
+const sendEmail = require('../utils/emailService'); // <--- Import Email Service
 
-// 4. Handle Contact Form
+// 4. Handle Contact Form (UPDATED)
 exports.sendMessage = async (req, res) => {
   try {
     const { name, email, message } = req.body;
@@ -78,8 +79,16 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Save to MongoDB
+    // 1. Save to MongoDB
     const newMessage = await Message.create({ name, email, message });
+
+    // 2. Send Email Notification (To You)
+    try {
+      await sendEmail({ name, email, message });
+    } catch (emailError) {
+      console.error("Email notification failed:", emailError);
+      // We do NOT stop the response here. The message is saved, which is the priority.
+    }
     
     res.status(201).json({ msg: "Message sent successfully!", id: newMessage._id });
   } catch (error) {

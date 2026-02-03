@@ -19,6 +19,10 @@ const Post = sequelize.define('Post', {
     type: DataTypes.STRING,
     defaultValue: "https://via.placeholder.com/800x400"
   },
+  videoUrl: {
+    type: DataTypes.STRING,
+    allowNull: true // Optional
+  },
   readTime: {
     type: DataTypes.STRING, // e.g., "5 min read"
     defaultValue: "5 min read"

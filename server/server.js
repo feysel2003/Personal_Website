@@ -18,6 +18,8 @@ const skillController = require('./src/controllers/skillController');
 const projectController = require('./src/controllers/projectController');
 const authController = require('./src/controllers/authController'); // <--- 2. Import Auth Controller
 const journeyController = require('./src/controllers/journeyController');
+const serviceController = require('./src/controllers/serviceController');
+const certController = require('./src/controllers/certificationController');
 
 
 const app = express();
@@ -44,6 +46,10 @@ app.get('/api/skills', skillController.getSkills);
 app.post('/api/seed-skills', skillController.seedSkills);
 app.get('/api/journey', journeyController.getJourney);
 app.post('/api/seed-journey', journeyController.seedJourney);
+app.get('/api/services', serviceController.getServices);
+app.post('/api/seed-services', serviceController.seedServices);
+app.get('/api/certifications', certController.getCerts);
+app.post('/api/seed-certifications', certController.seedCertifications);
 
 // C. Protected Routes (Admin Only)
 app.post('/api/projects', authMiddleware, projectController.createProject);
@@ -52,6 +58,15 @@ app.post('/api/journey', authMiddleware, journeyController.createJourney);
 app.delete('/api/journey/:id', authMiddleware, journeyController.deleteJourney);
 app.put('/api/journey/:id', authMiddleware, journeyController.updateJourney);
 
+// ... Protected Certify Routes (Admin)
+app.post('/api/certifications', authMiddleware, certController.createCert);
+app.put('/api/certifications/:id', authMiddleware, certController.updateCert);
+app.delete('/api/certifications/:id', authMiddleware, certController.deleteCert);
+
+// ... Protected Service Routes (Admin)
+app.post('/api/services', authMiddleware, serviceController.createService);
+app.put('/api/services/:id', authMiddleware, serviceController.updateService);
+app.delete('/api/services/:id', authMiddleware, serviceController.deleteService);
 
 // BLOG ADMIN ROUTES
 app.post('/api/posts', authMiddleware, blogController.createPost);

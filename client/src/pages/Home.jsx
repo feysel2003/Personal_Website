@@ -65,36 +65,50 @@ function Home() {
       <section className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto min-h-[90vh] flex flex-col md:flex-row items-center gap-12">
         
         {/* LEFT: Text Content */}
-       <div className="flex-1 text-center md:text-left z-10">
-  <motion.div 
-    initial={{ opacity: 0, x: -50 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.8 }}
-  >
-    <span className="text-blue-600 dark:text-blue-500 font-mono tracking-wider text-sm">
-      3RD YEAR SOFTWARE ENGINEERING STUDENT
-    </span>
-    
-    <h1 className="text-5xl md:text-7xl font-bold mt-4 mb-6 leading-tight text-gray-900 dark:text-white">
-      Documenting My <br />
-      <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-500 dark:to-pink-500 bg-clip-text text-transparent">
-        Engineering Journey
-      </span>
-    </h1>
-    
-    <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-lg mx-auto md:mx-0 mb-8 leading-relaxed">
-      From <span className="font-bold text-gray-800 dark:text-white">Addis Ababa</span> to the Blockchain. 
-      Bridging the gap between University Theory (Java, C++, DSA) and Modern Practice (MERN, Web3).
-    </p>
+       {/* LEFT: Text Content */}
+        <div className="flex-1 text-center md:text-left z-10">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              <span className="text-blue-600 dark:text-blue-400 font-mono tracking-widest text-xs font-bold uppercase">
+                I'm Feysel Mifta Software Engineering Student • Ethiopia
+              </span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-extrabold mt-2 mb-6 leading-tight text-gray-900 dark:text-white">
+              Bridging <br />
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-500 dark:to-pink-500 bg-clip-text text-transparent">
+                Theory & Practice
+              </span>
+            </h1>
+            
+            <p className="text-gray-600 dark:text-gray-300 text-lg md:text-xl max-w-xl mx-auto md:mx-0 mb-8 leading-relaxed">
+              I combine the <strong>academic rigor</strong> of a 5-year Engineering degree (Algorithms, C++, Java) with the <strong>modern agility</strong> of self-taught development ((P)MERN, Web3).
+              <br className="hidden md:block" />
+              <span className="text-sm mt-2 block text-gray-500 dark:text-gray-400">
+                Currently building decentralized systems and scalable APIs in Addis Ababa.
+              </span>
+            </p>
 
-    <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-      <a href="/about" className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold transition shadow-lg shadow-blue-500/20">
-        Explore My Roadmap
-      </a>
-      <a href="#projects" className="px-8 py-3 border border-gray-300 dark:border-slate-600 hover:border-blue-500 dark:hover:border-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-full font-bold transition flex items-center gap-2 text-gray-700 dark:text-white">
-        <FileText size={18}/> View Projects
-      </a>
-    </div>
+            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+              <a href="#projects" className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold transition shadow-lg shadow-blue-500/20 transform hover:-translate-y-1">
+                View My Work
+              </a>
+              <a href="/about" className="px-8 py-3 border border-gray-300 dark:border-slate-600 hover:border-blue-500 dark:hover:border-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-full font-bold transition flex items-center gap-2 text-gray-700 dark:text-white transform hover:-translate-y-1">
+                <FileText size={18}/> See My Journey
+              </a>
+            </div>
+
+            {/* Social Links */}
+            <div className="flex gap-6 mt-10 justify-center md:justify-start text-gray-500 dark:text-gray-400">
+              <a href="https://github.com/feysel2003" target="_blank" className="hover:text-gray-900 dark:hover:text-white transition hover:scale-110"><Github size={24} /></a>
+              <a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition hover:scale-110"><Linkedin size={24} /></a>
+              <a href="mailto:feyselmifta982@gmail.com" className="hover:text-green-600 dark:hover:text-green-400 transition hover:scale-110"><Mail size={24} /></a>
+            </div>
           </motion.div>
         </div>
 
@@ -140,11 +154,11 @@ function Home() {
               className="absolute -left-6 top-10 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md p-3 rounded-xl border border-gray-200 dark:border-white/10 shadow-xl flex items-center gap-3"
             >
               <div className="bg-blue-500/10 dark:bg-blue-500/20 p-2 rounded-lg text-blue-600 dark:text-blue-400">
-                <Cpu size={24} />
+                <Code size={24} />
               </div>
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 font-mono">Blockchain</p>
-                <p className="text-sm font-bold text-gray-900 dark:text-white">Architect</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-mono">Software</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">Engineer</p>
               </div>
             </motion.div>
 
@@ -197,36 +211,38 @@ function Home() {
         {/* Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none -z-10" />
 
-        <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-          {/* FIX 6: Updated text color */}
+        <div className="flex flex-col xl:flex-row justify-between items-center mb-12 gap-6">
           <h2 className="text-3xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
             <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
             Featured Projects
           </h2>
 
-          {/* Filter Buttons */}
-          <div className="flex gap-2 p-1 bg-gray-200 dark:bg-slate-800 rounded-lg">
-            {['ALL', 'WEB3', 'PERN', 'MERN'].map((cat) => (
+          {/* Filter Buttons - UPDATED with new categories & mobile wrapping */}
+          <div className="flex flex-wrap justify-center gap-2 p-1.5 bg-gray-100 dark:bg-slate-800 rounded-xl">
+            {['ALL', 'WEB3', 'MERN', 'PERN', 'UNIVERSITY', 'SELF-TAUGHT'].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-all duration-300 ${
                   filter === cat 
-                    ? 'bg-blue-600 text-white shadow-lg' 
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700'
                 }`}
               >
-                {cat}
+                {/* Formatting: Capitalize first letter only for looks, or keep uppercase */}
+                {cat === 'UNIVERSITY' ? 'ACADEMIC' : cat}
               </button>
             ))}
           </div>
         </div>
 
         {loading ? (
-          <div className="flex justify-center p-20"><div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent"></div></div>
+          <div className="flex justify-center p-20">
+            <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+          </div>
         ) : (
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <AnimatePresence>
+            <AnimatePresence mode='popLayout'>
               {filteredProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
@@ -235,7 +251,10 @@ function Home() {
         )}
         
         {filteredProjects.length === 0 && !loading && (
-          <p className="text-center text-gray-500 py-10">No projects found in this category.</p>
+          <div className="text-center py-20 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-2xl">
+            <p className="text-gray-500 dark:text-gray-400 text-lg">No projects found in this category.</p>
+            <button onClick={() => setFilter('ALL')} className="mt-4 text-blue-600 hover:underline">View All Projects</button>
+          </div>
         )}
       </section>
 

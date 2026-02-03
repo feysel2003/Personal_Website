@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Code, GraduationCap, Award, Calendar, User, ExternalLink } from 'lucide-react';
 import API from '../services/api';
+import Certifications from '../components/Certifications';
 
 const About = () => {
   const [timelineData, setTimelineData] = useState([]);
@@ -25,20 +26,48 @@ const About = () => {
     <div className="min-h-screen pt-24 px-6 pb-20">
       <div className="max-w-5xl mx-auto">
         
-        {/* Header */}
-        <div className="text-center mb-16">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-bold mb-6 text-gray-900 dark:text-white"
+        {/* Header / Bio */}
+        <div className="mb-20 grid md:grid-cols-2 gap-12 items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
           >
-            My <span className="text-blue-600 dark:text-blue-500">Academic Journey</span>
-          </motion.h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            I am a 3rd-year Software Engineering student in a 5-year program in Ethiopia. 
-            I combine rigorous university theory with modern self-taught technologies.
-          </p>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
+              More Than Just <span className="text-blue-600 dark:text-blue-500">Code.</span>
+            </h1>
+            <div className="space-y-4 text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+              <p>
+                I am a <strong> Software Engineering student</strong> enrolled in a rigorous 5-year program in Ethiopia. My academic life focuses on the *science* of computing—Algorithms, Math, and Low-level logic.
+              </p>
+              <p>
+                However, I realized early on that university theory moves slower than the tech industry. To bridge that gap, I became a <strong>self-taught developer</strong>.
+              </p>
+              <p>
+                Through resources like <strong>Dr. Angela Yu's Bootcamp</strong> and <strong>FreeCodeCamp</strong>, I mastered the MERN stack. Recently, my passion for financial freedom and open systems led me to <strong>Web3 and Blockchain</strong> development.
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative"
+          >
+            <div className="absolute inset-0 bg-blue-600/10 rounded-2xl transform rotate-3"></div>
+            <img 
+              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?fit=crop&w=800&q=80" 
+              alt="Engineering Student" 
+              className="relative rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 transform -rotate-2 hover:rotate-0 transition duration-500"
+            />
+          </motion.div>
         </div>
+
+        {/* Timeline Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Engineering Roadmap</h2>
+          <p className="text-gray-500 dark:text-gray-400">The 5-Year Journey: From Hello World to Decentralized Systems.</p>
+        </div>
+
 
         {/* Loading State */}
         {loading && <div className="text-center text-gray-500">Loading Timeline...</div>}
@@ -128,6 +157,8 @@ const About = () => {
 
         </div>
         
+        <Certifications />
+
         {/* Looking Forward */}
         <div className="mt-20 text-center bg-blue-50 dark:bg-blue-900/10 p-8 rounded-2xl border border-blue-100 dark:border-blue-500/20">
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Looking Ahead (Year 4 & 5)</h3>

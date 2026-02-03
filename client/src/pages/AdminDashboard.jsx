@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAccount, useSignMessage } from 'wagmi';
 import axios from 'axios';
-import { Shield, Lock, LayoutDashboard, Mail, Plus, Trash2, Edit2, ExternalLink, RefreshCw, Send, FileText, Code, Database, Server, Globe, Terminal, Cpu, Shield as ShieldIcon, GraduationCap } from 'lucide-react';
+import { Shield, Lock, LayoutDashboard, Mail, Plus, Trash2, Edit2, ExternalLink, RefreshCw, Send, FileText, Code, Database, Server, Globe, Terminal, Cpu, Shield as ShieldIcon, GraduationCap, Briefcase, Award } from 'lucide-react';
 
 // API Base URL
 const API_URL = "http://localhost:5000/api";
@@ -18,6 +18,8 @@ const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
   const [skills, setSkills] = useState([]);
   const [journey, setJourney] = useState([]); // Journey Data
+  const [services, setServices] = useState([]);
+  const [certs, setCerts] = useState([]);
   
   // --- FORM STATES & EDITING STATES ---
 
@@ -30,7 +32,7 @@ const AdminDashboard = () => {
   // 2. Blog Form
   const [isEditingPost, setIsEditingPost] = useState(false);
   const [editingPostId, setEditingPostId] = useState(null);
-  const initialBlogForm = { title: '', content: '', imageUrl: '', readTime: '5 min read', tags: '' };
+  const initialBlogForm = { title: '', content: '', imageUrl: '', videoUrl: '', readTime: '5 min read', tags: '' };
   const [blogForm, setBlogForm] = useState(initialBlogForm);
 
   // 3. Skill Form
@@ -47,6 +49,18 @@ const AdminDashboard = () => {
     instructor: '', skills: '', projectTitle: '', projectLink: '', orderId: 0 
   };
   const [journeyForm, setJourneyForm] = useState(initialJourneyForm);
+
+  // Service Form
+const [isEditingService, setIsEditingService] = useState(false);
+const [editingServiceId, setEditingServiceId] = useState(null);
+const initialServiceForm = { title: '', description: '', icon: 'Code', price: '', features: '' };
+const [serviceForm, setServiceForm] = useState(initialServiceForm);
+
+// New Certify Form
+const [isEditingCert, setIsEditingCert] = useState(false);
+const [editingCertId, setEditingCertId] = useState(null);
+const initialCertForm = { title: '', issuer: '', date: '', link: '', imageUrl: '' };
+const [certForm, setCertForm] = useState(initialCertForm);
 
   // --- AUTH & FETCH ---
 
@@ -67,18 +81,23 @@ const AdminDashboard = () => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
     
     try {
-      const [msgRes, projRes, postRes, skillRes, journeyRes] = await Promise.all([
+      const [msgRes, projRes, postRes, skillRes, journeyRes, serviceRes, certRes] = await Promise.all([
         axios.get(`${API_URL}/messages`, config),
         axios.get(`${API_URL}/projects`),
         axios.get(`${API_URL}/posts`),
         axios.get(`${API_URL}/skills`),
-        axios.get(`${API_URL}/journey`)
+        axios.get(`${API_URL}/journey`),
+        axios.get(`${API_URL}/services`), // <--- New Fetch
+        axios.get(`${API_URL}/certifications`)
       ]);
       setMessages(msgRes.data);
       setProjects(projRes.data);
       setPosts(postRes.data);
       setSkills(skillRes.data);
       setJourney(journeyRes.data);
+      setServices(serviceRes.data); // <--- Set Data
+      setCerts(certRes.data);
+
     } catch (error) {
       if (error.response && (error.response.status === 400 || error.response.status === 401)) {
         setToken(null);
@@ -95,23 +114,50 @@ const AdminDashboard = () => {
   const handleSubmitProject = async (e) => {
     e.preventDefault();
     const config = { headers: { Authorization: `Bearer ${token}` } };
+    
+    // Logic: Convert comma-separated string to Array
+    let formattedStack = [];
+    if (Array.isArray(formData.techStack)) {
+      formattedStack = formData.techStack;
+    } else if (typeof formData.techStack === 'string') {
+      formattedStack = formData.techStack.split(',').map(s => s.trim()).filter(s => s !== "");
+    }
+
+    // Logic: Convert empty strings to null for DB validation (Fixes 500 Error)
     const payload = {
       ...formData,
-      techStack: Array.isArray(formData.techStack) ? formData.techStack : formData.techStack.split(',').map(s => s.trim())
+      techStack: formattedStack,
+      githubUrl: formData.githubUrl === "" ? null : formData.githubUrl,
+      liveUrl: formData.liveUrl === "" ? null : formData.liveUrl,
+      imageUrl: formData.imageUrl === "" ? null : formData.imageUrl,
     };
+
     try {
-      if (isEditing) await axios.put(`${API_URL}/projects/${editingId}`, payload, config);
-      else await axios.post(`${API_URL}/projects`, payload, config);
-      alert("Project Saved!");
+      if (isEditing) {
+        await axios.put(`${API_URL}/projects/${editingId}`, payload, config);
+        alert("Project Updated!");
+      } else {
+        await axios.post(`${API_URL}/projects`, payload, config);
+        alert("Project Created!");
+      }
+      
+      // Reset Form
       setFormData(initialProjectForm);
       setIsEditing(false);
       setEditingId(null);
       fetchData(); 
-    } catch (error) { alert("Operation failed"); }
+    } catch (error) { 
+      console.error("Project Error:", error);
+      alert("Operation failed"); 
+    }
   };
 
   const handleEditClick = (p) => {
-    setFormData({ ...p, techStack: p.techStack.join(', ') });
+    setFormData({ 
+      ...p, 
+      // Convert Array back to String for the input field
+      techStack: Array.isArray(p.techStack) ? p.techStack.join(', ') : p.techStack 
+    });
     setIsEditing(true);
     setEditingId(p.id);
     setActiveTab('projects');
@@ -120,7 +166,12 @@ const AdminDashboard = () => {
 
   const handleDeleteProject = async (id) => {
     if(!window.confirm("Delete project?")) return;
-    try { await axios.delete(`${API_URL}/projects/${id}`, { headers: { Authorization: `Bearer ${token}` } }); fetchData(); } catch (e) { alert("Delete failed"); }
+    try { 
+      await axios.delete(`${API_URL}/projects/${id}`, { headers: { Authorization: `Bearer ${token}` } }); 
+      fetchData(); 
+    } catch (e) { 
+      alert("Delete failed"); 
+    }
   };
 
   // 2. Blog
@@ -219,6 +270,104 @@ const AdminDashboard = () => {
     try { await axios.delete(`${API_URL}/messages/${id}`, { headers: { Authorization: `Bearer ${token}` } }); fetchData(); } catch (e) { alert("Delete failed"); }
   };
 
+  // 7. Cert Handlers (Fix: Using axios)
+  
+  // Submit (Create/Update)
+  const handleSubmitCert = async (e) => {
+    e.preventDefault();
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    
+    // Clean data
+    const payload = {
+      ...certForm,
+      link: certForm.link === "" ? null : certForm.link,
+      imageUrl: certForm.imageUrl === "" ? null : certForm.imageUrl
+    };
+
+    try {
+      if (isEditingCert) {
+        await axios.put(`${API_URL}/certifications/${editingCertId}`, payload, config);
+        alert("Updated Successfully!");
+      } else {
+        await axios.post(`${API_URL}/certifications`, payload, config);
+        alert("Added Successfully!");
+      }
+      setCertForm(initialCertForm);
+      setIsEditingCert(false);
+      setEditingCertId(null);
+      fetchData();
+    } catch (error) { 
+      console.error(error);
+      alert("Error: " + (error.response?.data?.error || "Operation failed"));
+    }
+  };
+
+  // Edit (Populate Form)
+  const handleEditCert = (c) => {
+    setCertForm({
+      title: c.title,
+      issuer: c.issuer,
+      date: c.date,
+      link: c.link || '', // Handle nulls
+      imageUrl: c.imageUrl || '' // Handle nulls
+    });
+    setIsEditingCert(true);
+    setEditingCertId(c.id);
+    // Scroll to top to see form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Delete
+  const handleDeleteCert = async (id) => {
+    if(!window.confirm("Are you sure you want to delete this certificate?")) return;
+    
+    try {
+      await axios.delete(`${API_URL}/certifications/${id}`, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+      fetchData();
+    } catch (error) {
+      alert("Delete failed");
+    }
+  };
+
+  // 7. Service Handlers
+const handleSubmitService = async (e) => {
+  e.preventDefault();
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const payload = {
+    ...serviceForm,
+    features: serviceForm.features.split(',').map(s => s.trim()) // Convert "A, B" to ["A", "B"]
+  };
+
+  try {
+    if (isEditingService) {
+      await axios.put(`${API_URL}/services/${editingServiceId}`, payload, config);
+      alert("Service Updated!");
+    } else {
+      await axios.post(`${API_URL}/services`, payload, config);
+      alert("Service Created!");
+    }
+    setServiceForm(initialServiceForm);
+    setIsEditingService(false);
+    setEditingServiceId(null);
+    fetchData();
+  } catch (error) { alert("Failed"); }
+};
+
+const handleEditService = (item) => {
+  setServiceForm({ ...item, features: item.features.join(', ') });
+  setIsEditingService(true);
+  setEditingServiceId(item.id);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const handleDeleteService = async (id) => {
+  if(!window.confirm("Delete service?")) return;
+  try { await axios.delete(`${API_URL}/services/${id}`, { headers: { Authorization: `Bearer ${token}` } }); fetchData(); } 
+  catch(e) { alert("Error"); }
+};
+
   // --- RENDER ---
 
   if (!token) {
@@ -255,7 +404,7 @@ const AdminDashboard = () => {
 
         {/* Tabs */}
         <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
-          {['projects', 'blog', 'skills', 'journey', 'messages'].map((tab) => (
+          {['projects', 'blog', 'skills', 'journey', 'messages', 'services', 'achievements'].map((tab) => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)} 
@@ -400,6 +549,10 @@ const AdminDashboard = () => {
                   </div>
                   <input placeholder="Cover Image URL" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
                     value={blogForm.imageUrl} onChange={e => setBlogForm({...blogForm, imageUrl: e.target.value})} />
+
+                    <input placeholder="YouTube Video URL (Optional)" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+  value={blogForm.videoUrl} onChange={e => setBlogForm({...blogForm, videoUrl: e.target.value})} />
+  
                   <div className="flex gap-2">
                     <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded font-bold transition">{isEditingPost ? 'Update' : 'Publish'}</button>
                     {isEditingPost && <button type="button" onClick={() => { setIsEditingPost(false); setBlogForm(initialBlogForm); }} className="px-4 bg-slate-700 text-white rounded">Cancel</button>}
@@ -440,6 +593,106 @@ const AdminDashboard = () => {
           </div>
         )}
         
+        {/* === ACHIEVEMENTS TAB === */}
+{activeTab === 'achievements' && (
+  <div className="grid lg:grid-cols-12 gap-8">
+    <div className="lg:col-span-4 bg-white dark:bg-slate-900 p-6 rounded-xl border border-gray-200 dark:border-slate-800 h-fit sticky top-24 shadow">
+      <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white"><Award className="text-yellow-500"/> {isEditingCert ? 'Edit Cert' : 'Add Cert'}</h3>
+      <form onSubmit={handleSubmitCert} className="space-y-4">
+        <input required placeholder="Title (e.g. Web3 Bootcamp)" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+          value={certForm.title} onChange={e => setCertForm({...certForm, title: e.target.value})} />
+        <input required placeholder="Issuer (e.g. Udemy)" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+          value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} />
+        <input required placeholder="Date (e.g. Dec 2024)" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+          value={certForm.date} onChange={e => setCertForm({...certForm, date: e.target.value})} />
+        <input placeholder="Credential Link (URL)" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+          value={certForm.link} onChange={e => setCertForm({...certForm, link: e.target.value})} />
+        <input placeholder="Logo Image URL" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+          value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} />
+        
+        <div className="flex gap-2">
+            <button className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white py-3 rounded font-bold transition">{isEditingCert ? 'Update' : 'Add'}</button>
+            {isEditingCert && <button type="button" onClick={() => { setIsEditingCert(false); setCertForm(initialCertForm); }} className="px-4 bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-white rounded">Cancel</button>}
+        </div>
+      </form>
+    </div>
+
+    <div className="lg:col-span-8 space-y-4">
+      {certs.map(c => (
+        <div key={c.id} className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 flex justify-between items-center shadow-sm">
+          <div>
+            <h4 className="font-bold text-lg text-gray-900 dark:text-white">{c.title}</h4>
+            <p className="text-sm text-gray-500">{c.issuer} • {c.date}</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => handleEditCert(c)} className="text-yellow-500 p-2"><Edit2 size={18}/></button>
+            <button onClick={() => handleDeleteCert(c.id)} className="text-red-500 p-2"><Trash2 size={18}/></button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+        {/* === SERVICES TAB === */}
+{activeTab === 'services' && (
+  <div className="grid lg:grid-cols-12 gap-8">
+    {/* Form */}
+    <div className="lg:col-span-4 bg-white dark:bg-slate-900 p-6 rounded-xl border border-gray-200 dark:border-slate-800 h-fit sticky top-24 shadow">
+      <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
+        <Briefcase className="text-blue-500"/> {isEditingService ? 'Edit Service' : 'Add Service'}
+      </h3>
+      <form onSubmit={handleSubmitService} className="space-y-4">
+        <input required placeholder="Service Title (e.g. Web Dev)" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+          value={serviceForm.title} onChange={e => setServiceForm({...serviceForm, title: e.target.value})} />
+        
+        <select className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white"
+          value={serviceForm.icon} onChange={e => setServiceForm({...serviceForm, icon: e.target.value})}>
+          <option value="Code">Code Icon</option>
+          <option value="Smartphone">Mobile Icon</option>
+          <option value="Globe">Web Icon</option>
+          <option value="Server">Backend Icon</option>
+          <option value="Cpu">Web3/Cpu Icon</option>
+          <option value="PenTool">Design Icon</option>
+        </select>
+
+        <textarea required placeholder="Description..." rows="3" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+          value={serviceForm.description} onChange={e => setServiceForm({...serviceForm, description: e.target.value})} />
+
+        <input required placeholder="Features (comma separated)" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+          value={serviceForm.features} onChange={e => setServiceForm({...serviceForm, features: e.target.value})} />
+
+        <input placeholder="Price (Optional, e.g. $500)" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+          value={serviceForm.price} onChange={e => setServiceForm({...serviceForm, price: e.target.value})} />
+
+        <div className="flex gap-2">
+            <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded font-bold transition">
+                {isEditingService ? 'Update' : 'Add'}
+            </button>
+            {isEditingService && <button type="button" onClick={() => { setIsEditingService(false); setServiceForm(initialServiceForm); }} className="px-4 bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-white rounded">Cancel</button>}
+        </div>
+      </form>
+    </div>
+
+    {/* List */}
+    <div className="lg:col-span-8 space-y-4">
+      {services.map(s => (
+        <div key={s.id} className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 flex justify-between items-center shadow-sm">
+          <div>
+            <h4 className="font-bold text-lg text-gray-900 dark:text-white">{s.title}</h4>
+            <p className="text-sm text-gray-500 line-clamp-1">{s.description}</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => handleEditService(s)} className="text-yellow-500 p-2"><Edit2 size={18}/></button>
+            <button onClick={() => handleDeleteService(s.id)} className="text-red-500 p-2"><Trash2 size={18}/></button>
+          </div>
+        </div>
+      ))}
+      {services.length === 0 && <p className="text-gray-500 text-center">No services added yet.</p>}
+    </div>
+  </div>
+)}
+
         {/* === PROJECTS TAB === */}
         {activeTab === 'projects' && (
           <div className="grid lg:grid-cols-12 gap-8">
