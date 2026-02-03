@@ -90,7 +90,7 @@ function Home() {
               I combine the <strong>academic rigor</strong> of a 5-year Engineering degree (Algorithms, C++, Java) with the <strong>modern agility</strong> of self-taught development ((P)MERN, Web3).
               <br className="hidden md:block" />
               <span className="text-sm mt-2 block text-gray-500 dark:text-gray-400">
-                Currently building decentralized systems and scalable APIs in Addis Ababa.
+                Currently I'm 4th year Software Engineering Student at WCU Universty.
               </span>
             </p>
 
@@ -136,7 +136,7 @@ function Home() {
             <div className="relative h-full w-full rounded-[2rem] overflow-hidden border border-white/20 dark:border-white/10 bg-white/30 dark:bg-slate-900/40 backdrop-blur-sm shadow-2xl">
               {/* REPLACE THIS SRC WITH YOUR PHOTO */}
               <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80" 
+                src="https://res.cloudinary.com/dosln7f10/image/upload/v1770138865/photo_2026-02-02_17-49-21_gf4zsw.jpg" 
                 alt="Profile" 
                 className="w-full h-full object-cover opacity-95 dark:opacity-90 hover:scale-105 transition-transform duration-700"
               />

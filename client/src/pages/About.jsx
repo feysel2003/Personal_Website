@@ -55,9 +55,9 @@ const About = () => {
           >
             <div className="absolute inset-0 bg-blue-600/10 rounded-2xl transform rotate-3"></div>
             <img 
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?fit=crop&w=800&q=80" 
+              src="https://res.cloudinary.com/dosln7f10/image/upload/v1770140345/photo_2026-02-02_17-49-21_gf4zsw.jpg" 
               alt="Engineering Student" 
-              className="relative rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 transform -rotate-2 hover:rotate-0 transition duration-500"
+              className="relative  rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 transform -rotate-2 hover:rotate-0 transition duration-500"
             />
           </motion.div>
         </div>
