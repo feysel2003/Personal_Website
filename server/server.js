@@ -20,7 +20,7 @@ const authController = require('./src/controllers/authController'); // <--- 2. I
 const journeyController = require('./src/controllers/journeyController');
 const serviceController = require('./src/controllers/serviceController');
 const certController = require('./src/controllers/certificationController');
-
+const analyticsController = require('./src/controllers/analyticsController');
 
 const app = express();
 
@@ -57,6 +57,9 @@ app.get('/api/messages', authMiddleware, projectController.getMessages);
 app.post('/api/journey', authMiddleware, journeyController.createJourney);
 app.delete('/api/journey/:id', authMiddleware, journeyController.deleteJourney);
 app.put('/api/journey/:id', authMiddleware, journeyController.updateJourney);
+app.get('/api/analytics', authMiddleware, analyticsController.getStats);
+app.delete('/api/analytics/log/:id', authMiddleware, analyticsController.deleteLog);
+app.delete('/api/analytics/clear', authMiddleware, analyticsController.clearAllLogs);
 
 // ... Protected Certify Routes (Admin)
 app.post('/api/certifications', authMiddleware, certController.createCert);
