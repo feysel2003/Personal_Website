@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://feysel-mifta.vercel.app/sitemap.xml

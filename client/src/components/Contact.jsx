@@ -30,7 +30,7 @@ const Contact = () => {
           Let's Build <span className="text-blue-600 dark:text-blue-500">Together</span>
         </h2>
         <p className="text-gray-600 dark:text-gray-400 text-lg">
-          Have an idea? I can help you bring it to life on the blockchain.
+          Have an idea? I can help you bring it to life on the modern system.
         </p>
       </div>
 

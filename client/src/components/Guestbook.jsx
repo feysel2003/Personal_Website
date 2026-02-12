@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
 import { parseEther } from 'viem'; 
-import { motion } from 'framer-motion';
-import { Loader2, PenTool, Hash, Wallet, Sparkles, Coffee } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, PenTool, Hash, Wallet, Sparkles, Coffee, Info, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import guestbookAbi from '../utils/guestbookAbi.json';
 import { CONTRACT_ADDRESS } from '../utils/constants';
 
-// IMPORT THE NEW FEED COMPONENT
+// IMPORT THE FEED COMPONENT
 import BlockchainFeed from './BlockchainFeed';
 
 const Guestbook = () => {
   const [message, setMessage] = useState('');
   const [sendTip, setSendTip] = useState(false); 
-  const { isConnected } = useAccount();
+  const { isConnected, chain } = useAccount();
   
   // Web3 Hooks
   const { data: hash, writeContract, isPending } = useWriteContract();
@@ -66,9 +66,15 @@ const Guestbook = () => {
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 dark:bg-blue-600/20 blur-[80px] -z-10" />
 
             <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">Immutable Ledger</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm">
-              Sign the smart contract on Sepolia Testnet.
-            </p>
+            
+            {/* EDUCATIONAL INFO BOX */}
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl text-sm text-blue-800 dark:text-blue-300 flex gap-3 items-start">
+              <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong>Recruiter Note:</strong> This dApp runs on the <u>Sepolia Testnet</u>. 
+                Transactions are real but use "Fake ETH". No real money is spent.
+              </div>
+            </div>
 
             {!isConnected ? (
               <div className="p-8 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-xl text-center bg-gray-50 dark:bg-slate-950/50">
@@ -78,16 +84,24 @@ const Guestbook = () => {
                   Please connect MetaMask to interact with the blockchain.
                 </p>
                 <div className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] uppercase font-bold tracking-wider rounded-full">
-                  Sepolia Network
+                  Status: Waiting for Web3
                 </div>
               </div>
             ) : (
               <form onSubmit={handleSign} className="space-y-4">
+                
+                {/* Network Warning */}
+                {chain?.id !== 11155111 && (
+                   <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs rounded-lg flex items-center gap-2">
+                     <AlertCircle size={16} /> Please switch wallet to Sepolia Network.
+                   </div>
+                )}
+
                 <div className="relative">
                   <textarea 
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Write your message..."
+                    placeholder="Write a message to be mined into the next block..."
                     rows="3"
                     maxLength="140"
                     className="w-full bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-700 rounded-xl p-4 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 transition resize-none"
@@ -109,8 +123,8 @@ const Guestbook = () => {
                       <Coffee size={18} />
                     </div>
                     <div>
-                      <p className={`font-bold text-sm ${sendTip ? 'text-amber-700 dark:text-amber-400' : 'text-gray-600 dark:text-gray-400'}`}>Buy me a coffee</p>
-                      <p className="text-[10px] text-gray-500">Send 0.002 ETH</p>
+                      <p className={`font-bold text-sm ${sendTip ? 'text-amber-700 dark:text-amber-400' : 'text-gray-600 dark:text-gray-400'}`}>Simulate "Buy Coffee"</p>
+                      <p className="text-[10px] text-gray-500">Sends 0.002 SepoliaETH (Testnet)</p>
                     </div>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${sendTip ? 'border-amber-500 bg-amber-500' : 'border-gray-300 dark:border-slate-600'}`}>
@@ -127,9 +141,9 @@ const Guestbook = () => {
                   `}
                 >
                   {isPending || isConfirming ? (
-                    <><Loader2 className="animate-spin" size={18} /> Mining...</>
+                    <><Loader2 className="animate-spin" size={18} /> Mining Transaction...</>
                   ) : (
-                    <><PenTool size={18} /> {sendTip ? 'Sign & Donate' : 'Sign Guestbook'}</>
+                    <><PenTool size={18} /> {sendTip ? 'Sign & Donate (Testnet)' : 'Sign Guestbook'}</>
                   )}
                 </button>
 
@@ -139,20 +153,22 @@ const Guestbook = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="p-3 bg-green-100 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400 text-xs font-bold rounded-lg flex items-center justify-center gap-2"
                   >
-                    <Sparkles size={14} /> Block Mined Successfully!
+                    <Sparkles size={14} /> Success! Block Mined.
                   </motion.div>
                 )}
               </form>
             )}
             
             <div className="mt-8 pt-6 border-t border-gray-200 dark:border-slate-800 flex justify-between text-xs text-gray-500 dark:text-gray-500 font-mono">
-              <span>Status: Active</span>
-              <span>Contract: {CONTRACT_ADDRESS.slice(0,6)}...{CONTRACT_ADDRESS.slice(-4)}</span>
+              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"/> Sepolia Live</span>
+              <a href={`https://sepolia.etherscan.io/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noreferrer" className="hover:text-blue-500 hover:underline">
+                {CONTRACT_ADDRESS.slice(0,6)}...{CONTRACT_ADDRESS.slice(-4)}
+              </a>
             </div>
           </div>
         </div>
 
-        {/* RIGHT: THE LIVE FEED (Using the Component) */}
+        {/* RIGHT: THE LIVE FEED */}
         <div className="lg:col-span-7">
           <BlockchainFeed entries={entries} />
         </div>

@@ -8,26 +8,29 @@ import { WagmiProvider } from 'wagmi'
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
-// 2. Import the config we created earlier
+// 2. NEW: Import HelmetProvider for SEO
+import { HelmetProvider } from 'react-helmet-async'
+
+// 3. Import the config we created earlier
 import { config } from './wagmi.js'
 import '@rainbow-me/rainbowkit/styles.css'
 
-// 3. Create a Query Client (Required by Wagmi v2)
+// 4. Create a Query Client (Required by Wagmi v2)
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {/* 4. WRAP YOUR APP IN THESE 3 PROVIDERS */}
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={darkTheme()}>
-          <BrowserRouter>
-
-          <App />
-
-          </BrowserRouter>
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    {/* 5. WRAP EVERYTHING IN HELMET PROVIDER */}
+    <HelmetProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider theme={darkTheme()}>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </HelmetProvider>
   </React.StrictMode>,
 )
