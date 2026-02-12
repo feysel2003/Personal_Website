@@ -7,22 +7,33 @@ const sendEmail = async (data) => {
   }
 
   try {
-    // FIX: Switched to Port 587 (TLS) instead of 465 (SSL)
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // Must be false for port 587
-      requireTLS: true, // Force TLS
+      port: 465,
+      secure: true, // Use SSL
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-      // Helps avoid timeout issues on cloud servers
-      tls: {
-        ciphers: 'SSLv3'
-      },
-      connectionTimeout: 10000, // 10 seconds
-      greetingTimeout: 5000     // 5 seconds
+      // AGGRESSIVE TIMEOUT SETTINGS
+      connectionTimeout: 60000, // Wait 60 seconds for connection
+      greetingTimeout: 30000,   // Wait 30 seconds for hello
+      socketTimeout: 60000,     // Wait 60 seconds for data
+      debug: true,              // Show debug info in logs
+      logger: true              // Log information to console
+    });
+
+    // Verify connection before sending
+    await new Promise((resolve, reject) => {
+      transporter.verify(function (error, success) {
+        if (error) {
+          console.error("❌ SMTP Connection Error:", error);
+          reject(error);
+        } else {
+          console.log("✅ SMTP Server is ready to take our messages");
+          resolve(success);
+        }
+      });
     });
 
     const mailOptions = {
@@ -40,9 +51,6 @@ const sendEmail = async (data) => {
           <p style="background: #f3f4f6; padding: 15px; border-left: 4px solid #2563eb; font-style: italic;">
             ${data.message}
           </p>
-          <p style="font-size: 12px; color: #666; margin-top: 20px;">
-            Sent from your Portfolio Contact Form via Render/Node.js
-          </p>
         </div>
       `,
     };
@@ -51,7 +59,7 @@ const sendEmail = async (data) => {
     console.log("✅ Email sent successfully:", info.messageId);
 
   } catch (error) {
-    console.error("❌ Email Sending Failed:", error);
+    console.error("❌ Email Sending Failed:", error.message);
   }
 };
 
