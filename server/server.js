@@ -8,19 +8,18 @@ const { connectPostgres, sequelize } = require('./src/config/db.postgres');
 const connectMongo = require('./src/config/db.mongo');
 
 // Import Middleware
-const trackVisit = require('./src/middleware/analytics');
-const authMiddleware = require('./src/middleware/auth'); // <--- 1. Import Auth Middleware
-
-const blogController = require('./src/controllers/blogController'); // <--- Import
-const skillController = require('./src/controllers/skillController');
+// const trackVisit = require('./src/middleware/analytics'); // <--- REMOVED Global Middleware
+const authMiddleware = require('./src/middleware/auth');
 
 // Import Controllers
 const projectController = require('./src/controllers/projectController');
-const authController = require('./src/controllers/authController'); // <--- 2. Import Auth Controller
+const authController = require('./src/controllers/authController');
 const journeyController = require('./src/controllers/journeyController');
 const serviceController = require('./src/controllers/serviceController');
 const certController = require('./src/controllers/certificationController');
 const analyticsController = require('./src/controllers/analyticsController');
+const blogController = require('./src/controllers/blogController');
+const skillController = require('./src/controllers/skillController');
 
 const app = express();
 
@@ -30,66 +29,88 @@ app.use(cors());
 app.use(express.json());
 
 // Custom Middleware
-app.use(trackVisit);
+// app.use(trackVisit); // <--- REMOVED: Stops tracking every single request automatically
 
 // --- ROUTES ---
 
-// A. Auth Routes (The missing part!)
-app.post('/api/auth/login', authController.login); // <--- 3. THIS WAS LIKELY MISSING
+// 1. ANALYTICS (Manual Trigger)
+// The frontend will call this ONLY when a user views a page (not admin)
+app.post('/api/visit', analyticsController.recordVisit); 
+
+// A. Auth Routes
+app.post('/api/auth/login', authController.login);
 
 // B. Public Routes
 app.get('/', (req, res) => res.json({ msg: 'Portfolio API v1.0' }));
+
+// Projects
 app.get('/api/projects', projectController.getProjects);
-app.post('/api/contact', projectController.sendMessage);
 app.post('/api/seed', projectController.seedProjects);
+
+// Skills
 app.get('/api/skills', skillController.getSkills);
 app.post('/api/seed-skills', skillController.seedSkills);
+
+// Journey
 app.get('/api/journey', journeyController.getJourney);
 app.post('/api/seed-journey', journeyController.seedJourney);
+
+// Services
 app.get('/api/services', serviceController.getServices);
 app.post('/api/seed-services', serviceController.seedServices);
+
+// Certifications
 app.get('/api/certifications', certController.getCerts);
 app.post('/api/seed-certifications', certController.seedCertifications);
 
-// C. Protected Routes (Admin Only)
-app.post('/api/projects', authMiddleware, projectController.createProject);
-app.get('/api/messages', authMiddleware, projectController.getMessages);
-app.post('/api/journey', authMiddleware, journeyController.createJourney);
-app.delete('/api/journey/:id', authMiddleware, journeyController.deleteJourney);
-app.put('/api/journey/:id', authMiddleware, journeyController.updateJourney);
+// Blog
+app.get('/api/posts', blogController.getPosts);
+app.get('/api/posts/:id', blogController.getPostById);
+app.post('/api/seed-blog', blogController.seedBlog);
+
+// Contact
+app.post('/api/contact', projectController.sendMessage);
+
+// C. Protected Routes (Admin Only - Requires Token)
+
+// Analytics Data
 app.get('/api/analytics', authMiddleware, analyticsController.getStats);
 app.delete('/api/analytics/log/:id', authMiddleware, analyticsController.deleteLog);
 app.delete('/api/analytics/clear', authMiddleware, analyticsController.clearAllLogs);
 
-// ... Protected Certify Routes (Admin)
+// Project Management
+app.post('/api/projects', authMiddleware, projectController.createProject);
+app.put('/api/projects/:id', authMiddleware, projectController.updateProject);
+app.delete('/api/projects/:id', authMiddleware, projectController.deleteProject);
+
+// Message Management
+app.get('/api/messages', authMiddleware, projectController.getMessages);
+app.delete('/api/messages/:id', authMiddleware, projectController.deleteMessage);
+
+// Journey Management
+app.post('/api/journey', authMiddleware, journeyController.createJourney);
+app.put('/api/journey/:id', authMiddleware, journeyController.updateJourney);
+app.delete('/api/journey/:id', authMiddleware, journeyController.deleteJourney);
+
+// Certifications Management
 app.post('/api/certifications', authMiddleware, certController.createCert);
 app.put('/api/certifications/:id', authMiddleware, certController.updateCert);
 app.delete('/api/certifications/:id', authMiddleware, certController.deleteCert);
 
-// ... Protected Service Routes (Admin)
+// Services Management
 app.post('/api/services', authMiddleware, serviceController.createService);
 app.put('/api/services/:id', authMiddleware, serviceController.updateService);
 app.delete('/api/services/:id', authMiddleware, serviceController.deleteService);
 
-// BLOG ADMIN ROUTES
+// Blog Management
 app.post('/api/posts', authMiddleware, blogController.createPost);
-app.delete('/api/posts/:id', authMiddleware, blogController.deletePost);
 app.put('/api/posts/:id', authMiddleware, blogController.updatePost);
+app.delete('/api/posts/:id', authMiddleware, blogController.deletePost);
 
+// Skills Management
 app.post('/api/skills', authMiddleware, skillController.createSkill);
+app.put('/api/skills/:id', authMiddleware, skillController.updateSkill);
 app.delete('/api/skills/:id', authMiddleware, skillController.deleteSkill);
-app.put('/api/skills/:id', authMiddleware, skillController.updateSkill); // <--- Update Skill Route
-
-// --- NEW ROUTES ---
-app.put('/api/projects/:id', authMiddleware, projectController.updateProject);   // Update
-app.delete('/api/projects/:id', authMiddleware, projectController.deleteProject); // Delete Project
-app.delete('/api/messages/:id', authMiddleware, projectController.deleteMessage); // Delete Message
-
-// --- BLOG ROUTES ---
-// ... Routes
-app.get('/api/posts', blogController.getPosts);       // Get List
-app.get('/api/posts/:id', blogController.getPostById); // Get One
-app.post('/api/seed-blog', blogController.seedBlog);  // Seed Data
 
 // --- START SERVER ---
 const startServer = async () => {

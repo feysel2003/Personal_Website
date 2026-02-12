@@ -1,4 +1,5 @@
 const Project = require('../models/sql/Project');
+const Message = require('../models/nosql/Message');
 
 // 1. Get all projects
 exports.getProjects = async (req, res) => {
@@ -21,8 +22,6 @@ exports.createProject = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
-// ... existing code ...
 
 // 3. Seed Database (Temporary)
 exports.seedProjects = async (req, res) => {
@@ -64,11 +63,6 @@ exports.seedProjects = async (req, res) => {
   }
 };
 
-// ... existing code ...
-
-const Message = require('../models/nosql/Message');
-const sendEmail = require('../utils/emailService'); // <--- Import Email Service
-
 // 4. Handle Contact Form (UPDATED)
 exports.sendMessage = async (req, res) => {
   try {
@@ -79,23 +73,17 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // 1. Save to MongoDB
+    // 1. Save to MongoDB (We keep this so you see it in Admin Dashboard)
     const newMessage = await Message.create({ name, email, message });
 
-    // 2. Send Email Notification (To You)
-    try {
-      await sendEmail({ name, email, message });
-    } catch (emailError) {
-      console.error("Email notification failed:", emailError);
-      // We do NOT stop the response here. The message is saved, which is the priority.
-    }
+    // NOTE: We removed the backend email sending part here because
+    // EmailJS (Frontend) now handles it reliably without server timeouts.
     
-    res.status(201).json({ msg: "Message sent successfully!", id: newMessage._id });
+    res.status(201).json({ msg: "Message saved successfully!", id: newMessage._id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // 5. Get All Messages (Admin Only)
 exports.getMessages = async (req, res) => {
