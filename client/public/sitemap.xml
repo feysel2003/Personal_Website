@@ -1,15 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-   <!-- Home -->
+   
+   <!-- 1. HOME PAGE (Highest Priority) -->
    <url>
       <loc>https://feysel-mifta.vercel.app/</loc>
-      <lastmod>2026-02-04</lastmod>
+      <lastmod>2026-02-13</lastmod>
+      <changefreq>monthly</changefreq>
       <priority>1.0</priority>
    </url>
-   <!-- About (High Priority) -->
+
+   <!-- 2. TECHNICAL BLOG (High Priority - Content updates often) -->
    <url>
-      <loc>https://feysel-mifta.vercel.app/about</loc>
-      <lastmod>2026-02-04</lastmod>
+      <loc>https://feysel-mifta.vercel.app/blog</loc>
+      <lastmod>2026-02-13</lastmod>
+      <changefreq>weekly</changefreq>
       <priority>0.9</priority>
    </url>
-   <!-- Other pages... -->
+
+   <!-- 3. SERVICES (What you offer) -->
+   <url>
+      <loc>https://feysel-mifta.vercel.app/services</loc>
+      <lastmod>2026-02-13</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+   </url>
+
+   <!-- 4. ABOUT ME (Your Story) -->
+   <url>
+      <loc>https://feysel-mifta.vercel.app/about</loc>
+      <lastmod>2026-02-13</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>1.0</priority>
+   </url>
+
+   <!-- 5. RESUME (Static content) -->
+   <url>
+      <loc>https://feysel-mifta.vercel.app/resume</loc>
+      <lastmod>2026-02-13</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.7</priority>
+   </url>
+
 </urlset>
