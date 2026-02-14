@@ -20,6 +20,7 @@ const certController = require('./src/controllers/certificationController');
 const analyticsController = require('./src/controllers/analyticsController');
 const blogController = require('./src/controllers/blogController');
 const skillController = require('./src/controllers/skillController');
+const resumeController = require('./src/controllers/resumeController');
 
 const app = express();
 
@@ -71,6 +72,9 @@ app.post('/api/seed-blog', blogController.seedBlog);
 // Contact
 app.post('/api/contact', projectController.sendMessage);
 
+// Resume
+app.get('/api/resume', resumeController.getItems);
+
 // C. Protected Routes (Admin Only - Requires Token)
 
 // Analytics Data
@@ -111,6 +115,12 @@ app.delete('/api/posts/:id', authMiddleware, blogController.deletePost);
 app.post('/api/skills', authMiddleware, skillController.createSkill);
 app.put('/api/skills/:id', authMiddleware, skillController.updateSkill);
 app.delete('/api/skills/:id', authMiddleware, skillController.deleteSkill);
+
+// Resume Management
+app.post('/api/resume', authMiddleware, resumeController.createItem);
+app.put('/api/resume/:id', authMiddleware, resumeController.updateItem);
+app.delete('/api/resume/:id', authMiddleware, resumeController.deleteItem);
+app.post('/api/seed-resume', resumeController.seedResume);
 
 // --- START SERVER ---
 const startServer = async () => {

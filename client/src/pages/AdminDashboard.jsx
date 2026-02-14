@@ -66,6 +66,13 @@ const AdminDashboard = () => {
   const initialCertForm = { title: '', issuer: '', date: '', link: '', imageUrl: '' };
   const [certForm, setCertForm] = useState(initialCertForm);
 
+  // 7. --- RESUME STATE ---
+  const [resumeItems, setResumeItems] = useState([]);
+  const [isEditingResume, setIsEditingResume] = useState(false);
+  const [editingResumeId, setEditingResumeId] = useState(null);
+  const initialResumeForm = { type: 'Experience', title: '', organization: '', startDate: '', endDate: '', description: '', technologies: '' };
+  const [resumeForm, setResumeForm] = useState(initialResumeForm);
+
   // --- AUTH & FETCH ---
 
   const handleLogin = async () => {
@@ -86,7 +93,7 @@ const AdminDashboard = () => {
     
     try {
       // Added Analytics Endpoint
-      const [msgRes, projRes, postRes, skillRes, journeyRes, serviceRes, certRes, statsRes] = await Promise.all([
+      const [msgRes, projRes, postRes, skillRes, journeyRes, serviceRes, certRes, statsRes, resumeRes] = await Promise.all([
         axios.get(`${API_URL}/messages`, config),
         axios.get(`${API_URL}/projects`),
         axios.get(`${API_URL}/posts`),
@@ -94,7 +101,8 @@ const AdminDashboard = () => {
         axios.get(`${API_URL}/journey`),
         axios.get(`${API_URL}/services`),
         axios.get(`${API_URL}/certifications`),
-        axios.get(`${API_URL}/analytics`, config) // <--- NEW
+        axios.get(`${API_URL}/analytics`, config),
+        axios.get(`${API_URL}/resume`) // <--- NEW
       ]);
       
       setMessages(msgRes.data);
@@ -104,7 +112,8 @@ const AdminDashboard = () => {
       setJourney(journeyRes.data);
       setServices(serviceRes.data);
       setCerts(certRes.data);
-      setStats(statsRes.data); // <--- NEW
+      setStats(statsRes.data);
+      setResumeItems(resumeRes.data); // <--- NEW
 
     } catch (error) {
       if (error.response && (error.response.status === 400 || error.response.status === 401)) {
@@ -242,6 +251,41 @@ const handleDeleteLog = async (id) => {
   const handleEditPost = (p) => { setBlogForm({...p, tags: p.tags.join(', ')}); setIsEditingPost(true); setEditingPostId(p.id); window.scrollTo(0,0); };
   const handleDeletePost = async (id) => { if(confirm("Delete?")) { await axios.delete(`${API_URL}/posts/${id}`, { headers: { Authorization: `Bearer ${token}` } }); fetchData(); }};
 
+  // --- RESUME HANDLERS (Axios) ---
+  const handleSubmitResume = async (e) => {
+    e.preventDefault();
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    
+    try {
+      if (isEditingResume) {
+        await axios.put(`${API_URL}/resume/${editingResumeId}`, resumeForm, config);
+        alert("Resume Item Updated!");
+      } else {
+        await axios.post(`${API_URL}/resume`, resumeForm, config);
+        alert("Resume Item Added!");
+      }
+      setResumeForm(initialResumeForm);
+      setIsEditingResume(false);
+      setEditingResumeId(null);
+      fetchData();
+    } catch (e) { alert("Error saving resume item"); }
+  };
+
+  const handleEditResume = (item) => {
+    setResumeForm(item);
+    setIsEditingResume(true);
+    setEditingResumeId(item.id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteResume = async (id) => {
+    if(!window.confirm("Delete this resume item?")) return;
+    try { 
+      await axios.delete(`${API_URL}/resume/${id}`, { headers: { Authorization: `Bearer ${token}` } }); 
+      fetchData(); 
+    } catch (e) { alert("Delete failed"); }
+  };
+
   // Messages
   const handleDeleteMessage = async (id) => { if(confirm("Delete?")) { await axios.delete(`${API_URL}/messages/${id}`, { headers: { Authorization: `Bearer ${token}` } }); fetchData(); }};
 
@@ -364,7 +408,7 @@ const handleDeleteLog = async (id) => {
 
         {/* Tabs */}
         <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
-          {['projects', 'journey', 'skills', 'services', 'achievements', 'blog', 'messages'].map((tab) => (
+          {['projects', 'journey', 'skills', 'services', 'achievements', 'blog', 'messages', 'resume'].map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 rounded-lg font-medium transition capitalize whitespace-nowrap ${activeTab === tab ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-slate-700'}`}>{tab}</button>
           ))}
         </div>
@@ -492,6 +536,79 @@ const handleDeleteLog = async (id) => {
            </div>
         )}
 
+{/* === RESUME TAB === */}
+        {activeTab === 'resume' && (
+          <div className="grid lg:grid-cols-12 gap-8">
+            {/* Form */}
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 p-6 rounded-xl border border-gray-200 dark:border-slate-800 h-fit sticky top-24 shadow">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
+                <FileText className="text-blue-500"/> {isEditingResume ? 'Edit Item' : 'Add Item'}
+              </h3>
+              <form onSubmit={handleSubmitResume} className="space-y-4">
+                
+                <select className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white"
+                  value={resumeForm.type} onChange={e => setResumeForm({...resumeForm, type: e.target.value})}>
+                  <option value="Experience">Experience</option>
+                  <option value="Education">Education</option>
+                </select>
+
+                <input required placeholder="Title / Degree" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+                  value={resumeForm.title} onChange={e => setResumeForm({...resumeForm, title: e.target.value})} />
+                
+                <input required placeholder="Organization / University" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+                  value={resumeForm.organization} onChange={e => setResumeForm({...resumeForm, organization: e.target.value})} />
+                
+                <div className="grid grid-cols-2 gap-2">
+                  <input required placeholder="Start Year" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+                    value={resumeForm.startDate} onChange={e => setResumeForm({...resumeForm, startDate: e.target.value})} />
+                  <input required placeholder="End Year" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+                    value={resumeForm.endDate} onChange={e => setResumeForm({...resumeForm, endDate: e.target.value})} />
+                </div>
+
+                <textarea required placeholder="Description..." rows="3" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+                  value={resumeForm.description} onChange={e => setResumeForm({...resumeForm, description: e.target.value})} />
+
+                <input placeholder="Technologies (comma separated)" className="w-full p-3 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded outline-none text-gray-900 dark:text-white" 
+                  value={resumeForm.technologies} onChange={e => setResumeForm({...resumeForm, technologies: e.target.value})} />
+
+                <div className="flex gap-2">
+                    <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded font-bold transition">
+                        {isEditingResume ? 'Update' : 'Add'}
+                    </button>
+                    {isEditingResume && (
+                        <button type="button" onClick={() => { setIsEditingResume(false); setResumeForm(initialResumeForm); }} className="px-4 bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-white rounded">
+                          Cancel
+                        </button>
+                    )}
+                </div>
+              </form>
+            </div>
+
+            {/* List */}
+            <div className="lg:col-span-8 space-y-4">
+              {resumeItems.map(item => (
+                <div key={item.id} className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 flex justify-between items-center shadow-sm">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${item.type === 'Experience' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' : 'bg-green-100 dark:bg-green-900/30 text-green-600'}`}>
+                        {item.type}
+                      </span>
+                      <span className="text-xs text-gray-500">{item.startDate} - {item.endDate}</span>
+                    </div>
+                    <h4 className="font-bold text-lg text-gray-900 dark:text-white">{item.title}</h4>
+                    <p className="text-sm text-gray-500">{item.organization}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleEditResume(item)} className="text-yellow-500 p-2 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 rounded"><Edit2 size={18}/></button>
+                    <button onClick={() => handleDeleteResume(item.id)} className="text-red-500 p-2 hover:bg-red-50 dark:hover:bg-red-900/10 rounded"><Trash2 size={18}/></button>
+                  </div>
+                </div>
+              ))}
+              {resumeItems.length === 0 && <p className="text-gray-500 text-center col-span-full">No resume items yet.</p>}
+            </div>
+          </div>
+        )}
+        
         {/* 7. MESSAGES TAB */}
         {activeTab === 'messages' && (
           <div className="grid gap-4">
